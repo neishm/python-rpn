@@ -78,8 +78,14 @@ def loadRMNlib(rmn_version=None):
     # Determine shared library suffix
     try:
       from rpnpy._sharedlibs import sharedlib_suffix as suffix
-      # For windows, need to change the current directory to see the .dll files.
-      os.chdir(os.path.join(os.path.dirname(__file__),os.pardir,'_sharedlibs'))
+      # Look for embedded shared libraries.
+      sharedlibs = os.path.join(os.path.dirname(__file__),os.pardir,'_sharedlibs')
+      # For Python >= 3.8 on Windows, need to add the library path
+      try:
+        os.add_dll_directory(sharedlibs)
+      # For Python < 3.8 on Windows, change the current directory to see the .dll files.
+      except AttributeError:
+        os.chdir(sharedlibs)
     except ImportError:
       suffix = 'so'
 
